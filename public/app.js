@@ -23,7 +23,7 @@ const stageDefinitions = [
 
 const stageVoicePrompts = [
   '找到贝贝发来的邀请邮件',
-  '告诉贝贝“我会参加”',
+  '“回复”贝贝，“我会参加”',
   '询问贝贝喜欢什么生日礼物',
   '请完成挑战',
   '查看贝贝的回信',
