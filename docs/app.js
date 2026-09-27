@@ -119,7 +119,7 @@ const state = {
   returnAvailable: false, sending: false, reviewOpen: false, feedback: null, firstLevelWrongClicks: 0, firstLevelNotice: false, thirdLevelWrongClicks: 0, thirdLevelNotice: false, deletedMessageIds: [],
   compose: { subject: '', body: '', recipientEmail: '', reply: false }, sentMessages: [], sentCompletionStage: 0, safetyAnswers: {}, attempts: {},
   quizDifficulty: 1, quizQuestionIndex: 0, quizSelection: null, quizSortOrder: [], quizSubmitted: false, quizCorrectCount: 0, completedStages: [],
-  studentId: new URLSearchParams(window.location.search).get('student') || '', mode: null, teacherStage: 0, afterReviewStep: 0, afterReviewSelection: null, afterReviewResult: '', afterReviewContinueOpen: false,
+  studentId: new URLSearchParams(window.location.search).get('student') || '', mode: null, teacherStage: 0, afterReviewStep: 0, afterReviewSelection: null, afterReviewResult: '', afterReviewContinueOpen: false, allLessonsCompleteOpen: false,
 };
 
 function $(selector) { return document.querySelector(selector); }
@@ -144,6 +144,10 @@ function markStageCompleted(stageNumber) {
   const next = getNextStageIndex();
   if (state.teacherStage === index && next !== index) state.teacherStage = next;
   state.stageIndex = next;
+  if (state.completedStages.length === stageDefinitions.length && !state.allLessonsCompleteOpen) {
+    state.allLessonsCompleteOpen = true;
+    speakResult('你已经成功完成了所有任务，你真棒！');
+  }
 }
 
 function speakFullPrompt(text) {
@@ -457,7 +461,8 @@ function renderLevels() {
     const completeBadge = completed ? '<span class="level-complete-badge" aria-label="已完成">✓</span>' : '';
     return `<button class="level-card ${completed ? 'completed' : ''} ${target ? 'teacher-target' : ''} ${current ? 'current-level' : ''}" data-action="select-level" data-level="${index}"><span class="level-number">${index + 1}</span><span class="level-copy"><strong>第${index + 1}关｜${escapeHtml(stage.title)}</strong><small>${escapeHtml(stage.caption)}</small></span><span class="level-state">${stateLabel}<b>→</b></span>${completeBadge}</button>`;
   }).join('');
-  return `<section class="content-card hub-shell levels-shell"><div class="hub-heading"><div><div class="eyebrow">课堂练习</div><h1>选择一个关卡开始</h1><p>老师发出指令后，学生点击对应关卡进入练习。</p></div><button class="secondary-button hub-back" data-action="go-launcher">‹ 返回学习入口</button></div>${feedbackHtml()}<div class="level-grid">${cards}</div></section>`;
+  const completionModal = state.allLessonsCompleteOpen ? '<div class="all-lessons-complete-backdrop" role="dialog" aria-modal="true" aria-labelledby="allLessonsCompleteTitle"><div class="all-lessons-complete-modal"><div class="all-lessons-complete-icon">✓</div><div class="eyebrow">课堂练习完成</div><h2 id="allLessonsCompleteTitle">你已经成功完成了所有任务！</h2><p>你真棒！五个关卡都完成了。</p><button class="primary-button all-lessons-restart-button" data-action="restart">重新开始学习</button></div></div>' : '';
+  return `<section class="content-card hub-shell levels-shell"><div class="hub-heading"><div><div class="eyebrow">课堂练习</div><h1>选择一个关卡开始</h1><p>老师发出指令后，学生点击对应关卡进入练习。</p></div><button class="secondary-button hub-back" data-action="go-launcher">‹ 返回学习入口</button></div>${feedbackHtml()}<div class="level-grid">${cards}</div>${completionModal}</section>`;
 }
 
 function renderAfterReview() {
@@ -918,7 +923,7 @@ function resetMessageReadState() {
 }
 
 function restartLesson() {
-  state.view = 'inbox'; state.selectedMessage = null; state.stageIndex = 0; state.transferStep = 0; state.returnAvailable = false; state.feedback = null; state.sentMessages = []; state.sentCompletionStage = 0; state.completedStages = []; state.safetyAnswers = {}; state.attempts = {}; state.firstLevelWrongClicks = 0; state.firstLevelNotice = false; state.thirdLevelWrongClicks = 0; state.thirdLevelNotice = false; state.deletedMessageIds = []; resetQuizState(); resetMessageReadState(); setStatus('准备开始'); trackEvent('restart-lesson'); render();
+  state.view = 'inbox'; state.selectedMessage = null; state.stageIndex = 0; state.transferStep = 0; state.returnAvailable = false; state.feedback = null; state.sentMessages = []; state.sentCompletionStage = 0; state.completedStages = []; state.allLessonsCompleteOpen = false; state.safetyAnswers = {}; state.attempts = {}; state.firstLevelWrongClicks = 0; state.firstLevelNotice = false; state.thirdLevelWrongClicks = 0; state.thirdLevelNotice = false; state.deletedMessageIds = []; resetQuizState(); resetMessageReadState(); setStatus('准备开始'); trackEvent('restart-lesson'); render();
 }
 
 document.addEventListener('click', (event) => {

@@ -238,6 +238,14 @@ body.login-mode { background: #f1f6f9; }
 .after-review-success-modal p { margin: 10px 0 0; color: #5a8d74; font-size: 12px; }
 .after-review-continue-button { min-width: 140px; margin-top: 24px; background: var(--green); }
 .after-review-continue-button:hover { background: #27845f; }
+.all-lessons-complete-backdrop { position: fixed; z-index: 40; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(29 52 83 / 32%); }
+.all-lessons-complete-modal { width: min(430px, 100%); border: 2px solid #92d2b0; border-radius: 18px; padding: 32px; background: #f6fff9; box-shadow: 0 18px 60px rgb(26 91 62 / 20%); text-align: center; }
+.all-lessons-complete-icon { display: grid; width: 56px; height: 56px; place-items: center; margin: 0 auto 14px; border-radius: 50%; color: #fff; background: var(--green); font-size: 30px; font-weight: 800; }
+.all-lessons-complete-modal .eyebrow { color: var(--green); }
+.all-lessons-complete-modal h2 { margin: 9px 0 0; color: #287b5b; font-size: 24px; }
+.all-lessons-complete-modal p { margin: 12px 0 0; color: #5a8d74; font-size: 13px; }
+.all-lessons-restart-button { min-width: 170px; margin-top: 25px; background: var(--green); }
+.all-lessons-restart-button:hover { background: #27845f; }
 .review-submit-button { display: block; min-width: 130px; margin: 24px auto 0; }
 .external-shell { min-height: 620px; }
 .completion-banner { display: flex; align-items: center; gap: 12px; margin-top: 31px; border: 1px solid #bce1cf; border-radius: 10px; padding: 14px 16px; background: #f4fcf7; }
