@@ -110,7 +110,7 @@ const state = {
   config: null, loggedIn: false, studentName: '', view: 'inbox', selectedMessage: null, supportLevel: 3, scaffoldLevel: 'full', stageIndex: 0, transferStep: 0,
   returnAvailable: false, sending: false, reviewOpen: false, feedback: null, firstLevelWrongClicks: 0, firstLevelNotice: false, thirdLevelWrongClicks: 0, thirdLevelNotice: false, deletedMessageIds: [],
   compose: { subject: '', body: '', recipientEmail: '', reply: false }, sentMessages: [], sentCompletionStage: 0, safetyAnswers: {}, attempts: {},
-  quizDifficulty: 1, quizQuestionIndex: 0, quizSelection: null, quizSortOrder: [], quizSubmitted: false, quizCorrectCount: 0,
+  quizDifficulty: 1, quizQuestionIndex: 0, quizSelection: null, quizSortOrder: [], quizSubmitted: false, quizCorrectCount: 0, completedStages: [],
   studentId: new URLSearchParams(window.location.search).get('student') || '', mode: null, teacherStage: 0, afterReviewStep: 0, afterReviewSelection: null, afterReviewResult: '', afterReviewContinueOpen: false,
 };
 
@@ -125,6 +125,18 @@ function getRecipientEmail() { return state.config?.recipient?.email || 'beibei@
 function getRecipientName() { return state.config?.recipient?.name || '贝贝'; }
 function currentStage() { return stageDefinitions[state.stageIndex] || stageDefinitions[4]; }
 function currentSupportLevel() { return supportLevels[state.supportLevel] || supportLevels[3]; }
+function isStageCompleted(index) { return state.completedStages.includes(index); }
+function getNextStageIndex() {
+  const next = stageDefinitions.findIndex((_, index) => !isStageCompleted(index));
+  return next >= 0 ? next : stageDefinitions.length - 1;
+}
+function markStageCompleted(stageNumber) {
+  const index = Math.max(0, Math.min(stageDefinitions.length - 1, Number(stageNumber) - 1));
+  if (!state.completedStages.includes(index)) state.completedStages.push(index);
+  const next = getNextStageIndex();
+  if (state.teacherStage === index && next !== index) state.teacherStage = next;
+  state.stageIndex = next;
+}
 
 function speakFullPrompt(text) {
   if (state.supportLevel !== 3 || !text || typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -423,10 +435,14 @@ function renderLauncher() {
 
 function renderLevels() {
   const targetStage = stageDefinitions[state.teacherStage] || stageDefinitions[0];
+  const nextStage = getNextStageIndex();
   const cards = stageDefinitions.map((stage, index) => {
-    const target = index === state.teacherStage;
-    const current = index === state.stageIndex;
-    return `<button class="level-card ${target ? 'teacher-target' : ''} ${current ? 'current-level' : ''}" data-action="select-level" data-level="${index}"><span class="level-number">${index + 1}</span><span class="level-copy"><strong>第${index + 1}关｜${escapeHtml(stage.title)}</strong><small>${escapeHtml(stage.caption)}</small></span><span class="level-state">${target ? '老师指令' : current ? '当前关卡' : '选择进入'}<b>→</b></span></button>`;
+    const completed = isStageCompleted(index);
+    const target = !completed && index === state.teacherStage;
+    const current = !completed && index === nextStage;
+    const stateLabel = completed ? '已完成' : current ? '准备进入' : target ? '老师指令' : '选择进入';
+    const completeBadge = completed ? '<span class="level-complete-badge" aria-label="已完成">✓</span>' : '';
+    return `<button class="level-card ${completed ? 'completed' : ''} ${target ? 'teacher-target' : ''} ${current ? 'current-level' : ''}" data-action="select-level" data-level="${index}"><span class="level-number">${index + 1}</span><span class="level-copy"><strong>第${index + 1}关｜${escapeHtml(stage.title)}</strong><small>${escapeHtml(stage.caption)}</small></span><span class="level-state">${stateLabel}<b>→</b></span>${completeBadge}</button>`;
   }).join('');
   return `<section class="content-card hub-shell levels-shell"><div class="hub-heading"><div><div class="eyebrow">课堂练习</div><h1>选择一个关卡开始</h1><p>老师发出指令后，学生点击对应关卡进入练习。</p></div><button class="secondary-button hub-back" data-action="go-launcher">‹ 返回学习入口</button></div><div class="teacher-directive"><div class="directive-icon">☞</div><div class="directive-copy"><strong>今天请完成第${state.teacherStage + 1}关：${escapeHtml(targetStage.title)}</strong><small>教师可以调整下面的任务编号，学生再选择要进入的关卡。</small></div><label class="teacher-select-label" for="teacherStageSelect">任务编号<select id="teacherStageSelect">${stageDefinitions.map((stage, index) => `<option value="${index}" ${index === state.teacherStage ? 'selected' : ''}>第${index + 1}关</option>`).join('')}</select></label></div>${feedbackHtml()}<div class="level-grid">${cards}</div></section>`;
 }
@@ -745,7 +761,7 @@ function handleThirdLevelWrongAction() {
 
 function openClassroom() {
   state.mode = 'classroom';
-  state.stageIndex = 0;
+  state.stageIndex = getNextStageIndex();
   state.transferStep = 0;
   state.returnAvailable = false;
   state.selectedMessage = null;
@@ -889,7 +905,7 @@ function resetMessageReadState() {
 }
 
 function restartLesson() {
-  state.view = 'inbox'; state.selectedMessage = null; state.stageIndex = 0; state.transferStep = 0; state.returnAvailable = false; state.feedback = null; state.sentMessages = []; state.sentCompletionStage = 0; state.safetyAnswers = {}; state.attempts = {}; state.firstLevelWrongClicks = 0; state.firstLevelNotice = false; state.thirdLevelWrongClicks = 0; state.thirdLevelNotice = false; state.deletedMessageIds = []; resetQuizState(); resetMessageReadState(); setStatus('准备开始'); trackEvent('restart-lesson'); render();
+  state.view = 'inbox'; state.selectedMessage = null; state.stageIndex = 0; state.transferStep = 0; state.returnAvailable = false; state.feedback = null; state.sentMessages = []; state.sentCompletionStage = 0; state.completedStages = []; state.safetyAnswers = {}; state.attempts = {}; state.firstLevelWrongClicks = 0; state.firstLevelNotice = false; state.thirdLevelWrongClicks = 0; state.thirdLevelNotice = false; state.deletedMessageIds = []; resetQuizState(); resetMessageReadState(); setStatus('准备开始'); trackEvent('restart-lesson'); render();
 }
 
 document.addEventListener('click', (event) => {
@@ -916,7 +932,7 @@ document.addEventListener('click', (event) => {
   else if (action === 'quiz-sort-item') { const index = Number(target.dataset.index); const position = state.quizSortOrder.indexOf(index); if (position >= 0) state.quizSortOrder.splice(position, 1); else state.quizSortOrder.push(index); render(); }
   else if (action === 'quiz-select-answer') { state.quizSelection = target.dataset.answer; setFeedback('', ''); render(); speakResult(target.dataset.voiceLabel); }
   else if (action === 'quiz-submit') submitQuizAnswer();
-  else if (action === 'finish-quiz') { state.view = 'levels'; state.quizSubmitted = false; setFeedback('', ''); trackEvent('finish-quiz', { difficulty: state.quizDifficulty }); setStatus('第四关完成，请选择下一关'); render(); }
+  else if (action === 'finish-quiz') { markStageCompleted(4); state.view = 'levels'; state.quizSubmitted = false; setFeedback('', ''); trackEvent('finish-quiz', { difficulty: state.quizDifficulty }); setStatus('第四关完成，请选择下一关'); render(); }
   else if (action === 'show-inbox' || action === 'refresh') { if (state.stageIndex === 0) state.firstLevelWrongClicks = 0; state.view = 'inbox'; state.selectedMessage = null; setFeedback('', ''); render(); }
   else if (action === 'show-contacts') { state.view = 'contacts'; setFeedback('', ''); render(); }
   else if (action === 'open-recipient-contacts') { state.view = 'contacts'; setFeedback('', ''); trackEvent('open-recipient-contacts', {}); render(); }
@@ -936,7 +952,7 @@ document.addEventListener('click', (event) => {
   }
   else if (action === 'select-recipient') { state.compose.recipientEmail = getRecipientEmail(); state.view = 'compose'; setFeedback('已选择贝贝。', 'success'); trackEvent('select-recipient', { recipient: getRecipientName() }); render(); }
   else if (action === 'clear-recipient') { state.compose.recipientEmail = ''; render(); }
-  else if (action === 'complete-level') { const completedStage = state.sentCompletionStage || (state.stageIndex === 2 ? 2 : 1); state.sentCompletionStage = 0; state.view = 'levels'; state.selectedMessage = null; setFeedback('', ''); trackEvent('complete-stage', { stage: completedStage }); setStatus(`第${completedStage}关完成，请选择下一关`); render(); }
+  else if (action === 'complete-level') { const completedStage = state.sentCompletionStage || (state.stageIndex === 2 ? 2 : 1); markStageCompleted(completedStage); state.sentCompletionStage = 0; state.view = 'levels'; state.selectedMessage = null; setFeedback('', ''); trackEvent('complete-stage', { stage: completedStage }); setStatus(`第${completedStage}关完成，请选择下一关`); render(); }
   else if (action === 'confirm-read') { state.stageIndex = 1; setFeedback('看清楚了。现在想一想：要怎样回应贝贝？', 'success'); trackEvent('complete-stage', { stage: 1 }); render(); }
   else if (action === 'confirm-transfer-read') { state.transferStep = 1; state.view = 'choice'; setFeedback('', ''); render(); }
   else if (action === 'confirm-return') { state.view = 'safety'; setFeedback('', ''); trackEvent('open-safety'); render(); }
@@ -945,7 +961,7 @@ document.addEventListener('click', (event) => {
   else if (action === 'insert-phrase') insertPhrase(target.dataset.text || '');
   else if (action === 'save-draft') { setStatus('草稿功能保留为下一步扩展'); trackEvent('save-draft'); }
   else if (action === 'choose-safety') chooseSafety(target.dataset.id, target.dataset.choice);
-  else if (action === 'show-result') { state.view = 'result'; render(); }
+  else if (action === 'show-result') { markStageCompleted(5); state.view = 'result'; render(); }
   else if (action === 'restart') restartLesson();
 });
 
