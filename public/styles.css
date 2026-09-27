@@ -29,18 +29,18 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 
 body.login-mode { background: #f1f6f9; }
 .login-shell { display: grid; min-height: 100vh; place-items: center; padding: 42px 20px; background: linear-gradient(135deg, #f4f8fa 0%, #edf4f7 52%, #eef5fb 100%); }
-.login-card { position: relative; width: min(620px, calc(100% - 24px)); min-height: 700px; overflow: hidden; border-radius: 22px; padding: 58px 42px 30px; background: #fff; box-shadow: 0 10px 28px rgb(32 54 75 / 10%); }
+.login-card { position: relative; width: min(520px, calc(100% - 24px)); min-height: 600px; overflow: hidden; border-radius: 20px; padding: 46px 30px 24px; background: #fff; box-shadow: 0 10px 28px rgb(32 54 75 / 10%); }
 .login-heading { position: relative; z-index: 1; text-align: center; }
 .login-kicker { color: #87a1bd; font-size: 12px; letter-spacing: .2em; }
-.login-heading h1 { margin: 13px 0 8px; color: #121820; font-size: 36px; letter-spacing: .03em; }
+.login-heading h1 { margin: 11px 0 7px; color: #121820; font-size: 32px; letter-spacing: .03em; }
 .login-heading p { margin: 0; color: #94a0b0; font-size: 13px; }
-.login-form { position: relative; z-index: 1; width: min(500px, 100%); margin: 42px auto 0; }
-.login-field { position: relative; display: flex; min-height: 68px; align-items: center; border: 2px solid #bac2d0; border-radius: 13px; padding: 0 24px; color: #525c6e; background: #fff; font-size: 20px; transition: border-color .18s ease, box-shadow .18s ease; }
+.login-form { position: relative; z-index: 1; width: min(420px, 100%); margin: 32px auto 0; }
+.login-field { position: relative; display: flex; min-height: 60px; align-items: center; border: 2px solid #bac2d0; border-radius: 12px; padding: 0 20px; color: #525c6e; background: #fff; font-size: 18px; transition: border-color .18s ease, box-shadow .18s ease; }
 .login-field:focus-within, .student-picker:focus, .student-picker.expanded { border-color: #4b78eb; box-shadow: 0 0 0 4px #edf2ff; outline: none; }
 .field-placeholder { color: #d2d5da; }
-.account-username { color: #4b5362; font-family: Georgia, "Times New Roman", serif; font-size: 23px; }
-.account-domain { margin-left: auto; color: #565c66; font-family: Georgia, "Times New Roman", serif; font-size: 24px; }
-.picker-arrow { margin-left: 16px; color: #9aa7ba; font-family: sans-serif; font-size: 20px; line-height: 1; transition: transform .18s ease; }
+.account-username { color: #4b5362; font-family: Georgia, "Times New Roman", serif; font-size: 21px; }
+.account-domain { margin-left: auto; color: #565c66; font-family: Georgia, "Times New Roman", serif; font-size: 22px; }
+.picker-arrow { margin-left: 12px; color: #9aa7ba; font-family: sans-serif; font-size: 18px; line-height: 1; transition: transform .18s ease; }
 .student-picker.expanded .picker-arrow { transform: rotate(180deg); }
 .student-menu { position: absolute; z-index: 5; right: 0; left: 0; display: grid; gap: 5px; margin-top: 8px; border: 1px solid #d7e0ed; border-radius: 13px; padding: 8px; background: #fff; box-shadow: 0 14px 30px rgb(40 61 92 / 15%); }
 .student-option { display: flex; min-height: 55px; align-items: center; gap: 11px; border: 0; border-radius: 9px; padding: 6px 12px; color: #45526a; background: #fff; text-align: left; }
@@ -51,29 +51,29 @@ body.login-mode { background: #f1f6f9; }
 .student-option small { color: #9aa6b6; font-family: Georgia, "Times New Roman", serif; font-size: 12px; }
 .student-option-check { color: #4d7ce9; font-size: 16px; opacity: 0; }
 .student-option.selected .student-option-check { opacity: 1; }
-.password-field { margin-top: 20px; }
-.password-field input { width: 100%; border: 0; outline: 0; color: #4b5362; background: transparent; font-family: Georgia, "Times New Roman", serif; font-size: 22px; letter-spacing: .18em; }
-.password-field input::placeholder { color: #d2d5da; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 19px; letter-spacing: 0; }
-.password-toggle { border: 0; padding: 0 2px; color: #aeb7c6; background: transparent; font-size: 20px; }
+.password-field { margin-top: 16px; }
+.password-field input { width: 100%; border: 0; outline: 0; color: #4b5362; background: transparent; font-family: Georgia, "Times New Roman", serif; font-size: 20px; letter-spacing: .18em; }
+.password-field input::placeholder { color: #d2d5da; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 17px; letter-spacing: 0; }
+.password-toggle { border: 0; padding: 0 2px; color: #aeb7c6; background: transparent; font-size: 18px; }
 .password-toggle.visible { color: #4b78eb; }
-.login-options { display: flex; min-height: 54px; align-items: center; justify-content: space-between; color: #5b6577; font-size: 16px; }
+.login-options { display: flex; min-height: 46px; align-items: center; justify-content: space-between; color: #5b6577; font-size: 14px; }
 .remember-option { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
 .remember-option input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-.fake-checkbox { display: inline-block; width: 22px; height: 22px; border: 2px solid #8d939a; border-radius: 3px; background: #fff; }
+.fake-checkbox { display: inline-block; width: 20px; height: 20px; border: 2px solid #8d939a; border-radius: 3px; background: #fff; }
 .remember-option input:checked + .fake-checkbox { border-color: #3f73ea; background: #3f73ea; box-shadow: inset 0 0 0 5px #fff; }
-.forgot-button { border: 0; padding: 0; color: #5b6577; background: transparent; font-size: 16px; }
+.forgot-button { border: 0; padding: 0; color: #5b6577; background: transparent; font-size: 14px; }
 .forgot-button:hover, .login-links button:hover, .login-terms button:hover { color: #3769db; }
 .login-feedback { min-height: 22px; color: #c47d2e; font-size: 13px; text-align: center; }
 .login-feedback.success { color: #2a986f; }
 .login-feedback.error { color: #c15259; }
 .login-feedback.info { color: #78869a; }
-.login-button { width: 100%; min-height: 64px; border: 0; border-radius: 9px; color: #fff; background: #376ff0; font-family: Georgia, "Times New Roman", serif; font-size: 26px; letter-spacing: .5em; text-indent: .5em; box-shadow: 0 7px 14px rgb(55 111 240 / 22%); transition: background .18s ease, transform .18s ease; }
+.login-button { width: 100%; min-height: 56px; border: 0; border-radius: 8px; color: #fff; background: #376ff0; font-family: Georgia, "Times New Roman", serif; font-size: 23px; letter-spacing: .5em; text-indent: .5em; box-shadow: 0 7px 14px rgb(55 111 240 / 22%); transition: background .18s ease, transform .15s ease; }
 .login-button:hover:not(:disabled) { background: #2c5fd3; transform: translateY(-1px); }
 .login-button:disabled { color: #d3d9e4; background: #dfe5ef; box-shadow: none; }
-.login-links { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 22px; color: #8490a2; }
-.login-links button { border: 0; padding: 0; color: #687387; background: transparent; font-size: 17px; }
-.login-links span { width: 1px; height: 19px; background: #c5cbd3; }
-.login-terms { position: relative; z-index: 1; margin-top: 60px; color: #737d8f; font-size: 13px; text-align: center; }
+.login-links { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 18px; color: #8490a2; }
+.login-links button { border: 0; padding: 0; color: #687387; background: transparent; font-size: 15px; }
+.login-links span { width: 1px; height: 17px; background: #c5cbd3; }
+.login-terms { position: relative; z-index: 1; margin-top: 48px; color: #737d8f; font-size: 12px; text-align: center; }
 .login-terms button { border: 0; padding: 0; color: #59677d; background: transparent; }
 
 .app-frame { display: flex; min-height: 100vh; flex-direction: column; max-width: 1540px; margin: 0 auto; background: var(--surface); box-shadow: 0 0 45px rgb(39 61 93 / 14%); }
