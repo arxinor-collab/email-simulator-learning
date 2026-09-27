@@ -111,7 +111,7 @@ const state = {
   returnAvailable: false, sending: false, reviewOpen: false, feedback: null, firstLevelWrongClicks: 0, firstLevelNotice: false, thirdLevelWrongClicks: 0, thirdLevelNotice: false, deletedMessageIds: [],
   compose: { subject: '', body: '', recipientEmail: '', reply: false }, sentMessages: [], sentCompletionStage: 0, safetyAnswers: {}, attempts: {},
   quizDifficulty: 1, quizQuestionIndex: 0, quizSelection: null, quizSortOrder: [], quizSubmitted: false, quizCorrectCount: 0,
-  studentId: new URLSearchParams(window.location.search).get('student') || '', mode: null, teacherStage: 0, afterReviewStep: 0, afterReviewSelection: null, afterReviewResult: '',
+  studentId: new URLSearchParams(window.location.search).get('student') || '', mode: null, teacherStage: 0, afterReviewStep: 0, afterReviewSelection: null, afterReviewResult: '', afterReviewContinueOpen: false,
 };
 
 function $(selector) { return document.querySelector(selector); }
@@ -439,8 +439,9 @@ function renderAfterReview() {
     const resultClass = state.afterReviewResult === 'correct' && option.value === scenario.correct ? 'correct' : state.afterReviewResult === 'wrong' && selected ? 'wrong' : '';
     return `<button class="review-option ${selected ? 'chosen' : ''} ${resultClass}" data-action="after-review-choice" data-choice="${escapeHtml(option.value)}" data-voice-label="${escapeHtml(option.label)}"><span>${index + 1}</span>${escapeHtml(option.label)}</button>`;
   }).join('');
-  const nextLabel = state.afterReviewStep === afterReviewScenarios.length - 1 ? '完成复习' : '下一题';
-  return `<section class="content-card hub-shell review-shell"><div class="hub-heading"><div><div class="eyebrow">课后巩固｜模拟复习</div><h1>先复习，再去真实邮箱练习</h1><p>完成下面三个小判断，确认已经记住收发邮件的基本步骤。</p></div><button class="secondary-button hub-back" data-action="go-launcher">‹ 返回学习入口</button></div><div class="review-progress">${progress}</div>${feedbackHtml()}<article class="review-question"><span class="review-question-index">${state.afterReviewStep + 1} / ${afterReviewScenarios.length}</span><div class="eyebrow">${escapeHtml(scenario.title)}</div><h2>${escapeHtml(scenario.question)}</h2><div class="review-options">${options}</div><button class="primary-button review-next-button" data-action="after-review-next" ${state.afterReviewSelection ? '' : 'disabled'}>${nextLabel}</button></article><div class="hub-footer"><span>选择答案后，点击“${nextLabel}”。</span><button class="secondary-button" data-action="go-launcher">退出复习</button></div></section>`;
+  const continueLabel = state.afterReviewStep === afterReviewScenarios.length - 1 ? '完成复习' : '下一题';
+  const continueModal = state.afterReviewContinueOpen ? `<div class="after-review-success-backdrop" role="dialog" aria-modal="true" aria-labelledby="afterReviewSuccessTitle"><div class="after-review-success-modal"><div class="after-review-success-icon">✓</div><div class="eyebrow">回答正确</div><h2 id="afterReviewSuccessTitle">是否进行下一题？</h2><p>你选对了，可以继续完成模拟复习。</p><button class="primary-button after-review-continue-button" data-action="after-review-next">${continueLabel}</button></div></div>` : '';
+  return `<section class="content-card hub-shell review-shell"><div class="hub-heading"><div><div class="eyebrow">课后巩固｜模拟复习</div><h1>先复习，再去真实邮箱练习</h1><p>完成下面三个小判断，确认已经记住收发邮件的基本步骤。</p></div><button class="secondary-button hub-back" data-action="go-launcher">‹ 返回学习入口</button></div><div class="review-progress">${progress}</div>${feedbackHtml()}<article class="review-question"><span class="review-question-index">${state.afterReviewStep + 1} / ${afterReviewScenarios.length}</span><div class="eyebrow">${escapeHtml(scenario.title)}</div><h2>${escapeHtml(scenario.question)}</h2><div class="review-options">${options}</div></article><div class="hub-footer"><span>选择正确答案后，会弹出绿色提示继续下一题。</span><button class="secondary-button" data-action="go-launcher">退出复习</button></div>${continueModal}</section>`;
 }
 
 function speakAfterReviewQuestion() {
@@ -769,7 +770,7 @@ function openClassroom() {
 }
 
 function openAfterReview() {
-  state.mode = 'after'; state.view = 'afterReview'; state.afterReviewStep = 0; state.afterReviewSelection = null; state.afterReviewResult = ''; state.feedback = null;
+  state.mode = 'after'; state.view = 'afterReview'; state.afterReviewStep = 0; state.afterReviewSelection = null; state.afterReviewResult = ''; state.afterReviewContinueOpen = false; state.feedback = null;
   trackEvent('select-learning-mode', { mode: 'after' });
   setStatus('先完成课后模拟复习'); render(); speakAfterReviewQuestion();
 }
@@ -808,39 +809,29 @@ function prepareLevel(level) {
 }
 
 function selectAfterReviewChoice(choice) {
+  const scenario = afterReviewScenarios[state.afterReviewStep];
   state.afterReviewSelection = choice;
-  state.afterReviewResult = '';
-  setFeedback('', '');
+  state.afterReviewResult = choice === scenario?.correct ? 'correct' : 'wrong';
+  state.afterReviewContinueOpen = state.afterReviewResult === 'correct';
+  trackEvent('after-review-choice', { choice, correct: state.afterReviewResult === 'correct', level: state.afterReviewStep + 1 });
+  setFeedback(state.afterReviewResult === 'correct' ? '回答正确。' : '这个选项不对，请重新选择。', state.afterReviewResult === 'correct' ? 'success' : 'info');
   render();
 }
 
 function advanceAfterReview() {
   const scenario = afterReviewScenarios[state.afterReviewStep];
   const choice = state.afterReviewSelection;
-  if (!scenario || !choice) return;
-  const correct = choice === scenario.correct;
-  trackEvent('after-review-choice', { choice, correct, level: state.afterReviewStep + 1 });
-  if (!correct) {
-    state.afterReviewResult = 'wrong';
-    setFeedback('这个选项不对，请重新选择。', 'info');
-    render();
-    return;
+  if (!scenario || !choice || state.afterReviewResult !== 'correct') return;
+  state.afterReviewContinueOpen = false;
+  if (state.afterReviewStep === afterReviewScenarios.length - 1) {
+    state.view = 'externalMail'; state.feedback = null; trackEvent('complete-after-review'); setStatus('模拟复习完成，可以选择邮箱实操'); render(); return;
   }
-  state.afterReviewResult = 'correct';
-  setFeedback('回答正确。', 'success');
+  state.afterReviewStep += 1;
+  state.afterReviewSelection = null;
+  state.afterReviewResult = '';
+  setFeedback('', '');
   render();
-  window.setTimeout(() => {
-    if (state.view !== 'afterReview') return;
-    if (state.afterReviewStep === afterReviewScenarios.length - 1) {
-      state.view = 'externalMail'; state.feedback = null; trackEvent('complete-after-review'); setStatus('模拟复习完成，可以选择邮箱实操'); render(); return;
-    }
-    state.afterReviewStep += 1;
-    state.afterReviewSelection = null;
-    state.afterReviewResult = '';
-    setFeedback('', '');
-    render();
-    speakAfterReviewQuestion();
-  }, 300);
+  speakAfterReviewQuestion();
 }
 
 function updateComposeLive() {
