@@ -571,6 +571,7 @@ function renderStudentHome() {
   const guidedThirdLevelPrompt = state.stageIndex === 2 && state.supportLevel === 1;
   const steppedThirdLevelPrompt = state.stageIndex === 2 && state.supportLevel >= 2;
   const lockFirstLevelControls = state.stageIndex === 0 && state.supportLevel >= 2;
+  const lockSecondLevelContacts = state.stageIndex === 1;
   let instruction = '老师指令：先找到一封未读邮件';
   if (fullFirstLevelPrompt || steppedFirstLevelPrompt) instruction = '老师指令：点击“收件箱”';
   if (guidedThirdLevelPrompt) instruction = '老师指令：你要写一封邮件发送给贝贝';
@@ -578,7 +579,7 @@ function renderStudentHome() {
   if (state.stageIndex === 4) instruction = state.supportLevel >= 2 ? '教师指令：查看“收件箱”。' : '教师指令：现在要查看贝贝的回信。';
   const focusInstruction = steppedFirstLevelPrompt || steppedThirdLevelPrompt || (state.stageIndex === 4 && state.supportLevel >= 2);
   const homeTask = state.supportLevel === 0 ? '' : `<div class="student-home-task ${focusInstruction ? 'first-level-instruction-focus' : ''}">${instruction}</div>`;
-  return `<section class="content-card student-home"><div class="student-profile-card"><div class="student-profile-head"><div class="student-avatar">${escapeHtml(state.studentName.slice(0, 1) || '学')}</div><div class="student-profile-copy"><div class="eyebrow">个人邮箱</div><h1>${escapeHtml(state.studentName || '学生')}</h1><p>${escapeHtml(account)}</p></div></div>${homeTask}<div class="student-shortcuts"><button class="student-shortcut ${fullFirstLevelPrompt || fullFifthLevelPrompt ? 'first-level-focus' : ''}" data-action="show-inbox"><span class="shortcut-icon"><img src="assets/unread-mail-icon.png" alt="" aria-hidden="true" /></span><span><strong>未读邮箱</strong><small>查看收到的新邮件</small></span><b>${unread}</b></button><button class="student-shortcut ${lockFirstLevelControls ? 'lesson-locked' : ''}" data-action="show-contacts" ${lockFirstLevelControls ? 'aria-disabled="true"' : ''}><span class="shortcut-icon"><img src="assets/contact-person-icon.png" alt="" aria-hidden="true" /></span><span><strong>联系人邮箱</strong><small>选择本课联系人</small></span><b>›</b></button></div></div></section>`;
+  return `<section class="content-card student-home"><div class="student-profile-card"><div class="student-profile-head"><div class="student-avatar">${escapeHtml(state.studentName.slice(0, 1) || '学')}</div><div class="student-profile-copy"><div class="eyebrow">个人邮箱</div><h1>${escapeHtml(state.studentName || '学生')}</h1><p>${escapeHtml(account)}</p></div></div>${homeTask}<div class="student-shortcuts"><button class="student-shortcut ${fullFirstLevelPrompt || fullFifthLevelPrompt ? 'first-level-focus' : ''}" data-action="show-inbox"><span class="shortcut-icon"><img src="assets/unread-mail-icon.png" alt="" aria-hidden="true" /></span><span><strong>未读邮箱</strong><small>查看收到的新邮件</small></span><b>${unread}</b></button><button class="student-shortcut ${lockFirstLevelControls || lockSecondLevelContacts ? 'lesson-locked' : ''}" data-action="show-contacts" ${(lockFirstLevelControls || lockSecondLevelContacts) ? 'aria-disabled="true"' : ''}><span class="shortcut-icon"><img src="assets/contact-person-icon.png" alt="" aria-hidden="true" /></span><span><strong>联系人邮箱</strong><small>选择本课联系人</small></span><b>›</b></button></div></div></section>`;
 }
 
 function renderFirstLevelNotice() {
@@ -939,6 +940,7 @@ document.addEventListener('click', (event) => {
   if (action === 'close-first-level-notice') { state.firstLevelNotice = false; render(); return; }
   if (action === 'close-third-level-notice') { state.thirdLevelNotice = false; render(); return; }
   if (state.stageIndex === 1 && action === 'start-write') { setFeedback('第二关要回复贝贝，请不要点击“写信”。', 'info'); setStatus('第二关请使用“回复”功能'); render(); return; }
+  if (state.stageIndex === 1 && action === 'show-contacts') return;
   const firstLevelLockedControl = target.classList.contains('receive') || ['start-write', 'show-drafts', 'show-sent', 'show-contacts'].includes(action);
   if (state.stageIndex === 0 && state.supportLevel >= 2 && firstLevelLockedControl) { handleFirstLevelWrongAction(); return; }
   if (state.stageIndex === 2 && state.supportLevel > 0 && ['show-inbox', 'show-drafts', 'show-sent', 'show-contacts'].includes(action)) { handleThirdLevelWrongAction(); return; }
