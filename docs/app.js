@@ -434,7 +434,6 @@ function renderLauncher() {
 }
 
 function renderLevels() {
-  const targetStage = stageDefinitions[state.teacherStage] || stageDefinitions[0];
   const nextStage = getNextStageIndex();
   const cards = stageDefinitions.map((stage, index) => {
     const completed = isStageCompleted(index);
@@ -444,7 +443,7 @@ function renderLevels() {
     const completeBadge = completed ? '<span class="level-complete-badge" aria-label="已完成">✓</span>' : '';
     return `<button class="level-card ${completed ? 'completed' : ''} ${target ? 'teacher-target' : ''} ${current ? 'current-level' : ''}" data-action="select-level" data-level="${index}"><span class="level-number">${index + 1}</span><span class="level-copy"><strong>第${index + 1}关｜${escapeHtml(stage.title)}</strong><small>${escapeHtml(stage.caption)}</small></span><span class="level-state">${stateLabel}<b>→</b></span>${completeBadge}</button>`;
   }).join('');
-  return `<section class="content-card hub-shell levels-shell"><div class="hub-heading"><div><div class="eyebrow">课堂练习</div><h1>选择一个关卡开始</h1><p>老师发出指令后，学生点击对应关卡进入练习。</p></div><button class="secondary-button hub-back" data-action="go-launcher">‹ 返回学习入口</button></div><div class="teacher-directive"><div class="directive-icon">☞</div><div class="directive-copy"><strong>今天请完成第${state.teacherStage + 1}关：${escapeHtml(targetStage.title)}</strong><small>教师可以调整下面的任务编号，学生再选择要进入的关卡。</small></div><label class="teacher-select-label" for="teacherStageSelect">任务编号<select id="teacherStageSelect">${stageDefinitions.map((stage, index) => `<option value="${index}" ${index === state.teacherStage ? 'selected' : ''}>第${index + 1}关</option>`).join('')}</select></label></div>${feedbackHtml()}<div class="level-grid">${cards}</div></section>`;
+  return `<section class="content-card hub-shell levels-shell"><div class="hub-heading"><div><div class="eyebrow">课堂练习</div><h1>选择一个关卡开始</h1><p>老师发出指令后，学生点击对应关卡进入练习。</p></div><button class="secondary-button hub-back" data-action="go-launcher">‹ 返回学习入口</button></div>${feedbackHtml()}<div class="level-grid">${cards}</div></section>`;
 }
 
 function renderAfterReview() {
