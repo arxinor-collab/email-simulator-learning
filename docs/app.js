@@ -428,6 +428,7 @@ function updateHomeSelection() {
 
 function updateFirstLevelGuidance() {
   const lockControls = state.stageIndex === 0 && state.supportLevel >= 2;
+  const lockSecondLevelWrite = state.stageIndex === 1;
   const fullPrompt = state.stageIndex === 0 && state.supportLevel === 3;
   const fullFifthLevelPrompt = state.stageIndex === 4 && state.supportLevel === 3;
   const inboxFolder = document.querySelector('.folder-item[data-action="show-inbox"]');
@@ -435,8 +436,9 @@ function updateFirstLevelGuidance() {
   inboxFolder?.classList.toggle('first-level-focus', fullPrompt || fullFifthLevelPrompt);
   writeButton?.classList.toggle('third-level-focus', state.stageIndex === 2 && state.supportLevel === 3);
   document.querySelectorAll('.action-button.receive, .action-button.write, .folder-item[data-action="show-drafts"], .folder-item[data-action="show-sent"], .folder-item[data-action="show-contacts"], .student-shortcut[data-action="show-contacts"]').forEach((button) => {
-    button.classList.toggle('lesson-locked', lockControls);
-    if (lockControls) button.setAttribute('aria-disabled', 'true');
+    const locked = lockControls || (lockSecondLevelWrite && button.classList.contains('write'));
+    button.classList.toggle('lesson-locked', locked);
+    if (locked) button.setAttribute('aria-disabled', 'true');
     else button.removeAttribute('aria-disabled');
   });
 }
@@ -924,6 +926,7 @@ document.addEventListener('click', (event) => {
   const action = target.dataset.action;
   if (action === 'close-first-level-notice') { state.firstLevelNotice = false; render(); return; }
   if (action === 'close-third-level-notice') { state.thirdLevelNotice = false; render(); return; }
+  if (state.stageIndex === 1 && action === 'start-write') { setFeedback('第二关要回复贝贝，请不要点击“写信”。', 'info'); setStatus('第二关请使用“回复”功能'); render(); return; }
   const firstLevelLockedControl = target.classList.contains('receive') || ['start-write', 'show-drafts', 'show-sent', 'show-contacts'].includes(action);
   if (state.stageIndex === 0 && state.supportLevel >= 2 && firstLevelLockedControl) { handleFirstLevelWrongAction(); return; }
   if (state.stageIndex === 2 && state.supportLevel > 0 && ['show-inbox', 'show-drafts', 'show-sent', 'show-contacts'].includes(action)) { handleThirdLevelWrongAction(); return; }
