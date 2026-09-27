@@ -461,7 +461,7 @@ function renderLevels() {
     const completeBadge = completed ? '<span class="level-complete-badge" aria-label="已完成">✓</span>' : '';
     return `<button class="level-card ${completed ? 'completed' : ''} ${target ? 'teacher-target' : ''} ${current ? 'current-level' : ''}" data-action="select-level" data-level="${index}"><span class="level-number">${index + 1}</span><span class="level-copy"><strong>第${index + 1}关｜${escapeHtml(stage.title)}</strong><small>${escapeHtml(stage.caption)}</small></span><span class="level-state">${stateLabel}<b>→</b></span>${completeBadge}</button>`;
   }).join('');
-  const completionModal = state.allLessonsCompleteOpen ? '<div class="all-lessons-complete-backdrop" role="dialog" aria-modal="true" aria-labelledby="allLessonsCompleteTitle"><div class="all-lessons-complete-modal"><div class="all-lessons-complete-icon">✓</div><div class="eyebrow">课堂练习完成</div><h2 id="allLessonsCompleteTitle">你已经成功完成了所有任务！</h2><p>你真棒！五个关卡都完成了。</p><button class="primary-button all-lessons-restart-button" data-action="restart">重新开始学习</button></div></div>' : '';
+  const completionModal = state.allLessonsCompleteOpen ? '<div class="all-lessons-complete-backdrop" role="dialog" aria-modal="true" aria-labelledby="allLessonsCompleteTitle"><div class="all-lessons-complete-modal"><div class="all-lessons-complete-icon">✓</div><div class="eyebrow">课堂练习完成</div><h2 id="allLessonsCompleteTitle">你已经成功完成了所有任务！</h2><p>你真棒！五个关卡都完成了。</p><button class="primary-button all-lessons-restart-button" data-action="restart-to-levels">重新开始学习</button></div></div>' : '';
   return `<section class="content-card hub-shell levels-shell"><div class="hub-heading"><div><div class="eyebrow">课堂练习</div><h1>选择一个关卡开始</h1><p>老师发出指令后，学生点击对应关卡进入练习。</p></div><button class="secondary-button hub-back" data-action="go-launcher">‹ 返回学习入口</button></div>${feedbackHtml()}<div class="level-grid">${cards}</div>${completionModal}</section>`;
 }
 
@@ -923,7 +923,14 @@ function resetMessageReadState() {
 }
 
 function restartLesson() {
-  state.view = 'inbox'; state.selectedMessage = null; state.stageIndex = 0; state.transferStep = 0; state.returnAvailable = false; state.feedback = null; state.sentMessages = []; state.sentCompletionStage = 0; state.completedStages = []; state.allLessonsCompleteOpen = false; state.safetyAnswers = {}; state.attempts = {}; state.firstLevelWrongClicks = 0; state.firstLevelNotice = false; state.thirdLevelWrongClicks = 0; state.thirdLevelNotice = false; state.deletedMessageIds = []; resetQuizState(); resetMessageReadState(); setStatus('准备开始'); trackEvent('restart-lesson'); render();
+  state.view = 'inbox'; state.selectedMessage = null; state.stageIndex = 0; state.transferStep = 0; state.returnAvailable = false; state.feedback = null; state.sentMessages = []; state.sentCompletionStage = 0; state.completedStages = []; state.allLessonsCompleteOpen = false; state.teacherStage = 0; state.safetyAnswers = {}; state.attempts = {}; state.firstLevelWrongClicks = 0; state.firstLevelNotice = false; state.thirdLevelWrongClicks = 0; state.thirdLevelNotice = false; state.deletedMessageIds = []; resetQuizState(); resetMessageReadState(); setStatus('准备开始'); trackEvent('restart-lesson'); render();
+}
+
+function restartLessonToLevels() {
+  restartLesson();
+  state.view = 'levels';
+  setStatus('请选择第一关开始学习');
+  render();
 }
 
 document.addEventListener('click', (event) => {
@@ -981,6 +988,7 @@ document.addEventListener('click', (event) => {
   else if (action === 'save-draft') { setStatus('草稿功能保留为下一步扩展'); trackEvent('save-draft'); }
   else if (action === 'choose-safety') chooseSafety(target.dataset.id, target.dataset.choice);
   else if (action === 'show-result') { markStageCompleted(5); state.view = 'result'; render(); }
+  else if (action === 'restart-to-levels') restartLessonToLevels();
   else if (action === 'restart') restartLesson();
 });
 
