@@ -231,7 +231,7 @@ body.login-mode { background: #f1f6f9; }
 .after-review-success-modal p { margin: 10px 0 0; color: #5a8d74; font-size: 12px; }
 .after-review-continue-button { min-width: 140px; margin-top: 24px; background: var(--green); }
 .after-review-continue-button:hover { background: #27845f; }
-.review-next-button { display: block; min-width: 130px; margin: 24px auto 0; }
+.review-submit-button { display: block; min-width: 130px; margin: 24px auto 0; }
 .external-shell { min-height: 620px; }
 .completion-banner { display: flex; align-items: center; gap: 12px; margin-top: 31px; border: 1px solid #bce1cf; border-radius: 10px; padding: 14px 16px; background: #f4fcf7; }
 .completion-banner > span { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 50%; color: #fff; background: var(--green); font-weight: 700; }
