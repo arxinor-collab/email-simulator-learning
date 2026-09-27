@@ -936,7 +936,7 @@ document.addEventListener('click', (event) => {
   else if (action === 'open-after-review') openAfterReview();
   else if (action === 'show-student-home') showStudentHome();
   else if (action === 'go-launcher') goLauncher();
-  else if (action === 'go-levels') { state.mode = 'classroom'; state.view = 'levels'; state.feedback = null; trackEvent('go-levels'); setStatus('请选择课堂关卡'); render(); }
+  else if (action === 'go-levels') { const returnWasRead = state.stageIndex === 4 && state.selectedMessage?.id === 'beibei-reply'; if (returnWasRead) markStageCompleted(5); state.mode = 'classroom'; state.view = 'levels'; state.feedback = null; trackEvent('go-levels'); setStatus(returnWasRead ? '第五关完成，请选择下一关' : '请选择课堂关卡'); render(); }
   else if (action === 'select-level') prepareLevel(target.dataset.level);
   else if (action === 'after-review-choice') selectAfterReviewChoice(target.dataset.choice);
   else if (action === 'after-review-submit') submitAfterReview();
