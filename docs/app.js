@@ -21,6 +21,14 @@ const stageDefinitions = [
   { title: '查收贝贝的回信', caption: '在邮箱中查收贝贝的回信。' },
 ];
 
+const stageVoicePrompts = [
+  '找到贝贝发来的邀请邮件',
+  '告诉贝贝“我会参加”',
+  '询问贝贝喜欢什么生日礼物',
+  '请完成挑战',
+  '查看贝贝的回信',
+];
+
 const initialMessages = [
   {
     id: 'birthday-invite', sender: '贝贝', senderEmail: 'beibei@example.com', subject: '生日派对邀请',
@@ -160,6 +168,10 @@ function speakResult(text) {
   utterance.rate = 0.9;
   utterance.pitch = 1;
   window.speechSynthesis.speak(utterance);
+}
+
+function speakStageTask(stageIndex) {
+  speakResult(stageVoicePrompts[stageIndex]);
 }
 
 let feedbackAudioContext = null;
@@ -820,7 +832,7 @@ function prepareLevel(level) {
   }
   state.view = safeLevel === 3 ? 'quizIntro' : 'studentHome';
   trackEvent('select-level', { level: safeLevel + 1 });
-  setStatus(safeLevel === 3 ? '请选择答题难度' : `已进入第${safeLevel + 1}关`); render();
+  setStatus(safeLevel === 3 ? '请选择答题难度' : `已进入第${safeLevel + 1}关`); render(); speakStageTask(safeLevel);
 }
 
 function selectAfterReviewChoice(choice) {
