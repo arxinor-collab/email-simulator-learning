@@ -179,9 +179,9 @@ body.login-mode { background: #f1f6f9; }
 .hub-note > span { color: #6a96d4; font-size: 16px; }
 .hub-note strong { color: #4b6b99; }
 .hub-note p { margin: 4px 0 0; }
-.hub-note.external-warning { align-items: center; border-color: #efb1b5; color: #a63f46; background: var(--red-pale); }
-.hub-note.external-warning > span { display: grid; flex: 0 0 48px; width: 48px; height: 48px; place-items: center; border-radius: 50%; color: #fff; background: var(--red); font-size: 34px; font-weight: 800; line-height: 1; }
-.hub-note.external-warning strong { color: #a9363e; font-size: 14px; }
+.hub-note.external-warning { align-items: center; border-color: #ead9b6; color: #806f52; background: #fffaf0; }
+.hub-note.external-warning > span { display: grid; flex: 0 0 48px; width: 48px; height: 48px; place-items: center; border-radius: 50%; color: #fff; background: #c59a55; font-size: 34px; font-weight: 800; line-height: 1; }
+.hub-note.external-warning strong { color: #8d713c; font-size: 14px; }
 .hub-back { white-space: nowrap; }
 .teacher-directive { display: flex; align-items: center; gap: 14px; margin-top: 31px; border: 1px solid #d8e6f8; border-radius: 12px; padding: 15px 17px; background: #f6faff; }
 .directive-icon { display: grid; flex: 0 0 35px; width: 35px; height: 35px; place-items: center; border-radius: 10px; color: #fff; background: #6e9ee1; font-size: 19px; }
