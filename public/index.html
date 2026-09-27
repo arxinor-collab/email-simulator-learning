@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2769c7" />
+    <title>电子邮箱模拟系统</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <section class="login-shell" id="loginScreen" aria-label="邮箱登录">
+      <div class="login-card">
+        <div class="login-heading">
+          <div class="login-kicker">贝贝的生日邮件</div>
+          <h1>账号登录</h1>
+          <p>选择自己的学习邮箱，开始今天的练习</p>
+        </div>
+        <form class="login-form" id="loginForm">
+          <div class="login-field student-picker" id="studentPicker" role="combobox" aria-expanded="false" aria-controls="studentMenu" tabindex="0">
+            <span class="field-placeholder" id="accountPlaceholder">邮箱账号或手机号</span>
+            <span class="account-username" id="accountUsername" aria-live="polite"></span>
+            <span class="account-domain">@example.com</span>
+            <span class="picker-arrow" aria-hidden="true">⌄</span>
+          </div>
+          <div class="student-menu" id="studentMenu" role="listbox" hidden></div>
+
+          <div class="login-field password-field" id="passwordField">
+            <input id="passwordInput" type="password" placeholder="输入密码" readonly autocomplete="off" aria-label="密码" />
+            <button class="password-toggle" id="passwordToggle" type="button" aria-label="显示或隐藏密码" aria-pressed="false">◉</button>
+          </div>
+          <div class="login-options">
+            <label class="remember-option"><input type="checkbox" id="rememberLogin" /><span class="fake-checkbox" aria-hidden="true"></span><span>30天内免登录</span></label>
+            <button class="forgot-button" type="button" id="forgotPassword">忘记密码</button>
+          </div>
+          <div class="login-feedback" id="loginFeedback" role="status" aria-live="polite"></div>
+          <button class="login-button" id="loginButton" type="submit" disabled>登 录</button>
+          <div class="login-links"><button type="button">注册新账号</button><span></span><button type="button">注册VIP</button></div>
+        </form>
+        <div class="login-terms">阅读并接受 <button type="button">《服务条款》</button> 和 <button type="button">《隐私政策》</button></div>
+      </div>
+    </section>
+
+    <div class="app-frame" id="mailApp" hidden>
+      <header class="topbar">
+          <div class="brand-area">
+            <img class="brand-mark" src="assets/email-simulator-icon.png" alt="" aria-hidden="true" />
+            <div>
+            <div class="brand-name">电子邮箱模拟系统</div>
+            </div>
+          </div>
+        <nav class="top-nav" aria-label="顶部导航">
+          <button class="nav-item active" data-action="show-inbox">学习邮箱</button>
+          <button class="nav-item" data-action="show-contacts">通讯录</button>
+          <span class="lesson-pill">第 <strong id="lessonStageNumber">1</strong> / 5 关</span>
+        </nav>
+        <button class="home-link" data-action="show-student-home" aria-label="首页">首页</button>
+        <div class="connection-status" id="connectionStatus">正在连接…</div>
+      </header>
+
+      <div class="workspace">
+        <aside class="sidebar" aria-label="邮箱功能区">
+          <div class="compose-actions">
+            <button class="action-button receive" data-action="show-inbox" data-voice-label="收信"><span>↓</span> 收信</button>
+            <button class="action-button write" data-action="start-write" data-voice-label="写信"><span>＋</span> 写信</button>
+          </div>
+
+          <div class="folder-section">
+            <div class="section-label">我的邮箱</div>
+            <button class="folder-item selected" data-action="show-inbox" data-voice-label="收件箱">
+              <span class="folder-icon">▣</span><span>收件箱</span><span class="unread-count" id="unreadCount">1</span>
+            </button>
+            <button class="folder-item" data-action="show-drafts" data-voice-label="草稿箱">
+              <span class="folder-icon">□</span><span>草稿箱</span>
+            </button>
+            <button class="folder-item" data-action="show-sent" data-voice-label="已发送">
+              <span class="folder-icon">➤</span><span>已发送</span>
+            </button>
+            <button class="folder-item" data-action="show-contacts" data-voice-label="通讯录">
+              <span class="folder-icon">♙</span><span>通讯录</span>
+            </button>
+          </div>
+
+          <div class="sidebar-footer">
+            <button class="level-select-button" type="button" data-action="go-levels">返回选择页</button>
+            <section class="teaching-settings" aria-label="教学设置">
+              <div class="teaching-settings-heading"><span class="settings-icon">✦</span><strong>教学设置</strong></div>
+              <div class="support-setting-row"><span>支持强度</span><strong id="supportLevelValue">完整提示</strong></div>
+              <input class="support-slider" id="supportLevel" type="range" min="0" max="3" step="1" value="3" aria-label="支持强度" aria-valuetext="完整提示" />
+              <div class="support-level-labels" aria-hidden="true"><span>无提示</span><span>少量提示</span><span>分步提示</span><span>完整提示</span></div>
+              <p class="support-description" id="supportDescription">显示完整步骤、关键词和句式提示。</p>
+            </section>
+          </div>
+        </aside>
+
+        <main class="main-panel" id="mainPanel" tabindex="-1"></main>
+      </div>
+
+      <footer class="statusbar">
+        <span class="status-dot"></span>
+        <span id="statusMessage">准备开始</span>
+        <span class="student-tag">学习者：<strong id="studentLabel">学生1</strong></span>
+      </footer>
+    </div>
+    <script src="app.js" defer></script>
+  </body>
+</html>

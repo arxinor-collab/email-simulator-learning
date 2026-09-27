@@ -1,0 +1,15 @@
+{
+  "name": "beibei-learning-mailbox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "面向《收发电子邮件》课堂的受控联网邮箱原型",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

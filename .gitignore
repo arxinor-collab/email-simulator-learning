@@ -1,0 +1,6 @@
+.env
+.env.*
+!.env.example
+data/*.jsonl
+node_modules/
+.DS_Store
